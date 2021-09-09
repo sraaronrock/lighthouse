@@ -104,6 +104,8 @@ pub enum BehaviourEvent<TSpec: EthSpec> {
         /// The message itself.
         message: PubsubMessage<TSpec>,
     },
+    // We have unsubscribed from a gossipsub topic.
+    UnsubscribedTopic(TopicHash),
     /// Inform the network to send a Status to this peer.
     StatusPeer(PeerId),
 }
@@ -377,6 +379,8 @@ impl<TSpec: EthSpec> Behaviour<TSpec> {
                 false
             }
             Ok(v) => {
+                // Inform the network
+                self.add_event(BehaviourEvent::UnsubscribedTopic(topic.hash()));
                 debug!(self.log, "Unsubscribed to topic"; "topic" => %topic);
                 v
             }
